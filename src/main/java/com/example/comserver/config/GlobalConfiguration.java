@@ -18,6 +18,9 @@ public class GlobalConfiguration {
 	@Value("${tcp.port}")
 	public int tcpPort;
 
+	@Value("${udp.port}")
+	public int udpPort;
+	
 	@Value("${boss.thread.count}")
 	private int bossCount;
 

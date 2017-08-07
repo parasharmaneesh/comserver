@@ -1,4 +1,4 @@
-package com.example.comserver.handler;
+package com.example.comserver.udp;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -7,13 +7,14 @@ import org.springframework.stereotype.Component;
 import io.netty.channel.ChannelHandlerAdapter;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
-import io.netty.channel.socket.SocketChannel;
+import io.netty.channel.socket.DatagramChannel;
 import io.netty.handler.codec.ByteToMessageDecoder;
-import io.netty.handler.timeout.ReadTimeoutHandler;
+import io.netty.handler.logging.LogLevel;
+import io.netty.handler.logging.LoggingHandler;
 
 @Component
-@Qualifier("serverChannelInitializer")
-public class ServerChannelInitializer extends ChannelInitializer<SocketChannel> {
+@Qualifier("serverChannelInitializerUDP")
+public class UDPServerChannelInitializer extends ChannelInitializer<DatagramChannel> {
 
 	@Autowired
 	@Qualifier("serverDataDecoder")
@@ -23,14 +24,10 @@ public class ServerChannelInitializer extends ChannelInitializer<SocketChannel> 
 	@Qualifier("serverDataHandler")
 	private ChannelHandlerAdapter serverDataHandler;
 	
-	@Autowired
-	@Qualifier("readTimeoutHandler")
-	private ReadTimeoutHandler readTimeoutHandler;
-
 	@Override
-	protected void initChannel(SocketChannel socketChannel) throws Exception {
-		ChannelPipeline pipeline = socketChannel.pipeline();
-		pipeline.addLast(readTimeoutHandler);
+	protected void initChannel(DatagramChannel datagramChannel) throws Exception {
+		ChannelPipeline pipeline = datagramChannel.pipeline();
+		pipeline.addLast(new LoggingHandler(LogLevel.INFO));
 		pipeline.addLast(serverDataDecoder);
 		pipeline.addLast(serverDataHandler);
 	}

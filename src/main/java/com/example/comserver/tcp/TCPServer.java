@@ -1,8 +1,6 @@
 package com.example.comserver.tcp;
 
 import java.net.InetSocketAddress;
-import java.util.HashMap;
-
 import javax.annotation.PreDestroy;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,24 +9,23 @@ import org.springframework.stereotype.Component;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
-import io.netty.channel.ChannelHandlerContext;
+
+import static com.example.comserver.Main.logger;
 
 @Component
-public class TCPServer {
+public class TCPServer implements Runnable{
 
 	@Autowired
-	@Qualifier("serverBootstrap")
+	@Qualifier("serverBootstrapTCP")
 	private ServerBootstrap serverBootstrap;
 
 	private InetSocketAddress tcpPort;
 
 	private Channel serverChannel;
 
-	public static HashMap<String, ChannelHandlerContext> channelCache = new HashMap<String, ChannelHandlerContext>();
-
 	public void start(int port) throws Exception {
 		tcpPort = new InetSocketAddress(port);
-		serverChannel = serverBootstrap.bind(tcpPort).sync().channel().closeFuture().sync().channel();
+		
 	}
 
 	@PreDestroy
@@ -49,7 +46,17 @@ public class TCPServer {
 		return tcpPort;
 	}
 
-	public void setTcpPort(InetSocketAddress tcpPort) {
-		this.tcpPort = tcpPort;
+	public void setTcpPort(int tcpPort) {
+		this.tcpPort = new InetSocketAddress(tcpPort);
 	}
+
+	@Override
+	public void run() {
+		try {
+			serverChannel = serverBootstrap.bind(tcpPort).sync().channel().closeFuture().sync().channel();
+		} catch (InterruptedException e) {
+			logger.error(e.getMessage(),e);
+		}
+	}
+
 }

@@ -5,7 +5,6 @@ import static com.example.comserver.Main.logger;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerAdapter;
 import io.netty.channel.ChannelHandlerContext;
 
@@ -16,7 +15,6 @@ public class ServerDataHandler extends ChannelHandlerAdapter {
 	@Override
 	public void channelActive(ChannelHandlerContext ctx) throws Exception {
 		ctx.fireChannelActive();
-		logger.debug(ctx.channel().remoteAddress().toString());
 	}
 
 	@Override
